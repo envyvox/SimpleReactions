@@ -84,7 +84,8 @@ namespace SR.Services.DiscordServices.DiscordClientService.Impl
         {
             try
             {
-                await _socketClient.SetGameAsync("..help ..about", null, ActivityType.Watching);
+                await _socketClient.SetGameAsync(
+                    $"..help ..about | {_socketClient.Guilds.Count} servers", null, ActivityType.Watching);
                 await _reactionService.UploadImagesFromDiscord(_socketClient);
 
                 _logger.LogInformation("Bot started");
