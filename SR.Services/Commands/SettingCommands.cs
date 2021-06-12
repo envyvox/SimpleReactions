@@ -55,14 +55,16 @@ namespace SR.Services.Commands
             var guildLanguage = await _discordGuildService.GetGuildLanguage((long) Context.Guild.Id);
 
             await _discordGuildService.UpdateGuildPrefix((long) Context.Guild.Id, newPrefix);
-            await ReplyAsync(ReplyMessage.SetPrefixSuccess.Parse(guildLanguage, Context.User.Mention, newPrefix));
+            await ReplyAsync(ReplyMessage.SetPrefixSuccess.Parse(language: guildLanguage,
+                Context.User.Mention, newPrefix));
         }
 
         [Command("language"), Alias("язык")]
         public async Task SetLanguageTask(Language newLanguage)
         {
             await _discordGuildService.UpdateGuildLanguage((long) Context.Guild.Id, newLanguage);
-            await ReplyAsync(ReplyMessage.SetLanguageSuccess.Parse(newLanguage, Context.User.Mention, newLanguage));
+            await ReplyAsync(ReplyMessage.SetLanguageSuccess.Parse(language: newLanguage,
+                Context.User.Mention, newLanguage.Localize()));
         }
 
         [Command("color"), Alias("цвет")]
@@ -73,7 +75,8 @@ namespace SR.Services.Commands
             if (newColor.StartsWith("#")) newColor = newColor.Remove(0, 1);
 
             await _discordGuildService.UpdateGuildColor((long) Context.Guild.Id, newColor);
-            await ReplyAsync(ReplyMessage.SetColorSuccess.Parse(guildLanguage, Context.User.Mention, newColor));
+            await ReplyAsync(ReplyMessage.SetColorSuccess.Parse(language: guildLanguage,
+                Context.User.Mention, newColor));
         }
     }
 }

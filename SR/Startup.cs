@@ -1,6 +1,6 @@
+using System;
 using System.Reflection;
 using Autofac;
-using Dapper;
 using Discord.Commands;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SR.Data;
 using SR.Framework.Autofac;
-using SR.Framework.Database;
-using SR.Framework.EF;
 using SR.Services.DiscordServices.DiscordClientService;
 using SR.Services.DiscordServices.DiscordClientService.Impl;
 using SR.Services.DiscordServices.DiscordClientService.Options;
@@ -27,32 +25,30 @@ namespace SR
             _config = config;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ConnectionOptions>(x => x.ConnectionString = _config.GetConnectionString("main"));
             services.Configure<DiscordClientOptions>(x => _config.GetSection("Discord").Bind(x));
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services
                 .AddHealthChecks()
                 .AddNpgSql(_config.GetConnectionString("main"))
                 .AddDbContextCheck<AppDbContext>();
 
-            services.AddDbContextPool<DbContext, AppDbContext>(o =>
+            services.AddDbContextPool<AppDbContext>(o =>
             {
                 o.UseNpgsql(_config.GetConnectionString("main"),
-                    s => { s.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name); });
+                    x => { x.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name); });
             });
 
             services.AddSingleton<CommandService>();
             services.AddSingleton<IDiscordClientService, DiscordClientService>();
+
+            services.AddMemoryCache();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.ApplicationServices.MigrateDb();
+            MigrateDb(app.ApplicationServices);
 
             if (env.IsDevelopment())
             {
@@ -76,6 +72,13 @@ namespace SR
                             !x.GetCustomAttribute<InjectableServiceAttribute>().IsSingletone)
                 .As(x => x.GetInterfaces()[0])
                 .InstancePerLifetimeScope();
+        }
+
+        private static void MigrateDb(IServiceProvider app)
+        {
+            using var serviceScope = app.GetService<IServiceScopeFactory>().CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            context.Database.Migrate();
         }
     }
 }

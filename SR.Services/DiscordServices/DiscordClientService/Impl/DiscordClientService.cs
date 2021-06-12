@@ -84,8 +84,7 @@ namespace SR.Services.DiscordServices.DiscordClientService.Impl
         {
             try
             {
-                await _socketClient.SetGameAsync(
-                    $"..help ..about | {_socketClient.Guilds.Count} servers", null, ActivityType.Watching);
+                await UpdateClientStatus();
                 await _reactionService.UploadImagesFromDiscord(_socketClient);
 
                 _logger.LogInformation("Bot started");
@@ -122,10 +121,24 @@ namespace SR.Services.DiscordServices.DiscordClientService.Impl
             }
         }
 
-        private async Task SocketClientOnJoinedGuild(SocketGuild socketGuild) =>
+        private async Task SocketClientOnJoinedGuild(SocketGuild socketGuild)
+        {
+            await UpdateClientStatus();
             await _discordGuildService.AddDiscordGuildToDb((long) socketGuild.Id);
+        }
 
-        private async Task SocketClientOnLeftGuild(SocketGuild socketGuild) =>
+        private async Task SocketClientOnLeftGuild(SocketGuild socketGuild)
+        {
+            await UpdateClientStatus();
             await _discordGuildService.DeleteDiscordGuildFromDb((long) socketGuild.Id);
+        }
+
+        private async Task UpdateClientStatus()
+        {
+            await _socketClient.SetGameAsync(
+                name: $"..help ..about | {_socketClient.Guilds.Count} servers",
+                streamUrl: null,
+                type: ActivityType.Watching);
+        }
     }
 }
