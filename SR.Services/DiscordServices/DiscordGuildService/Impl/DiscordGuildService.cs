@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Data.Entity.Core;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using SR.Data;
+using SR.Data.Entities;
 using SR.Data.Enums;
-using SR.Data.Models;
 using SR.Framework.Autofac;
 
 namespace SR.Services.DiscordServices.DiscordGuildService.Impl
@@ -34,11 +33,15 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         {
             if (_cache.TryGetValue(string.Format(GuildPrefixKey, guildId), out string prefix)) return prefix;
 
-            prefix = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .Select(x => x.Prefix)
-                .SingleOrDefaultAsync();
+            var guild = await _db.DiscordGuilds
+                .SingleOrDefaultAsync(x => x.Id == guildId);
+
+            if (guild is null)
+            {
+                guild = await AddDiscordGuildToDb(guildId);
+            }
+
+            prefix = guild.Prefix;
 
             _cache.Set(string.Format(GuildPrefixKey, guildId), prefix, DefaultCacheOptions);
 
@@ -49,11 +52,15 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         {
             if (_cache.TryGetValue(string.Format(GuildLanguageKey, guildId), out Language language)) return language;
 
-            language = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .Select(x => x.Language)
-                .SingleOrDefaultAsync();
+            var guild = await _db.DiscordGuilds
+                .SingleOrDefaultAsync(x => x.Id == guildId);
+
+            if (guild is null)
+            {
+                guild = await AddDiscordGuildToDb(guildId);
+            }
+
+            language = guild.Language;
 
             _cache.Set(string.Format(GuildLanguageKey, guildId), language, DefaultCacheOptions);
 
@@ -64,29 +71,40 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         {
             if (_cache.TryGetValue(string.Format(GuildColorKey, guildId), out string color)) return color;
 
-            color = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .Select(x => x.Color)
-                .SingleOrDefaultAsync();
+            var guild = await _db.DiscordGuilds
+                .SingleOrDefaultAsync(x => x.Id == guildId);
+
+            if (guild is null)
+            {
+                guild = await AddDiscordGuildToDb(guildId);
+            }
+
+            color = guild.Color;
 
             _cache.Set(string.Format(GuildColorKey, guildId), color, DefaultCacheOptions);
 
             return color;
         }
 
-        public async Task AddDiscordGuildToDb(long guildId)
+        public async Task<DiscordGuild> AddDiscordGuildToDb(long guildId)
         {
-            await _db.DiscordGuilds.AddAsync(new DiscordGuild {Id = guildId});
+            var created = await _db.DiscordGuilds.AddAsync(new DiscordGuild
+            {
+                Id = guildId,
+                Prefix = "..",
+                Language = Language.English,
+                Color = "36393F"
+            });
+
             await _db.SaveChangesAsync();
+
+            return created.Entity;
         }
 
         public async Task DeleteDiscordGuildFromDb(long guildId)
         {
             var discordGuild = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(x => x.Id == guildId);
 
             if (discordGuild is null)
             {
@@ -100,9 +118,7 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         public async Task UpdateGuildPrefix(long guildId, string newPrefix)
         {
             var discordGuild = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(x => x.Id == guildId);
 
             if (discordGuild is null)
             {
@@ -119,9 +135,7 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         public async Task UpdateGuildLanguage(long guildId, Language newLanguage)
         {
             var discordGuild = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(x => x.Id == guildId);
 
             if (discordGuild is null)
             {
@@ -138,9 +152,7 @@ namespace SR.Services.DiscordServices.DiscordGuildService.Impl
         public async Task UpdateGuildColor(long guildId, string newColor)
         {
             var discordGuild = await _db.DiscordGuilds
-                .AsQueryable()
-                .Where(x => x.Id == guildId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(x => x.Id == guildId);
 
             if (discordGuild is null)
             {

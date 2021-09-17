@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SR.Data.Models;
+using SR.Data.Entities;
+using SR.Data.Extensions;
 
 namespace SR.Data
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Reaction> Reactions { get; set; }
-        public DbSet<DiscordGuild> DiscordGuilds { get; set; }
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -14,7 +13,13 @@ namespace SR.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            modelBuilder.UseEntityTypeConfiguration<AppDbContext>();
+            modelBuilder.UseSnakeCaseNamingConvention();
         }
+
+        public DbSet<Reaction> Reactions { get; set; }
+        public DbSet<DiscordGuild> DiscordGuilds { get; set; }
     }
 }

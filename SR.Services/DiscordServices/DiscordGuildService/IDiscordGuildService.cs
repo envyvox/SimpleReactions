@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SR.Data.Entities;
 using SR.Data.Enums;
 
 namespace SR.Services.DiscordServices.DiscordGuildService
@@ -8,7 +9,7 @@ namespace SR.Services.DiscordServices.DiscordGuildService
         Task<string> GetGuildPrefix(long guildId);
         Task<Language> GetGuildLanguage(long guildId);
         Task<string> GetGuildColor(long guildId);
-        Task AddDiscordGuildToDb(long guildId);
+        Task<DiscordGuild> AddDiscordGuildToDb(long guildId);
         Task DeleteDiscordGuildFromDb(long guildId);
         Task UpdateGuildPrefix(long guildId, string newPrefix);
         Task UpdateGuildLanguage(long guildId, Language newLanguage);

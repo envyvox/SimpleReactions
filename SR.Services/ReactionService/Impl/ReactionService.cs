@@ -18,7 +18,6 @@ namespace SR.Services.ReactionService.Impl
     {
         private readonly IOptions<DiscordClientOptions> _options;
         private readonly AppDbContext _db;
-        private readonly Random _random = new();
 
         public ReactionService(IOptions<DiscordClientOptions> options, AppDbContext db)
         {
@@ -55,23 +54,23 @@ namespace SR.Services.ReactionService.Impl
         private async Task AddReactionUrlsToDb(Reaction type, IEnumerable<string> urls)
         {
             var newReactions = urls
-                .Select(url => new Data.Models.Reaction {Type = type, Url = url})
+                .Select(url => new Data.Entities.Reaction
+                {
+                    Id = Guid.NewGuid(),
+                    Type = type,
+                    Url = url
+                })
                 .ToArray();
 
             foreach (var newReaction in newReactions)
             {
                 var entity = await _db.Reactions
                     .AsQueryable()
-                    .Where(x => x.Type == newReaction.Type && x.Url == newReaction.Url)
-                    .SingleOrDefaultAsync();
+                    .SingleOrDefaultAsync(x => x.Type == newReaction.Type && x.Url == newReaction.Url);
 
                 if (entity is null)
                 {
                     await _db.Reactions.AddAsync(newReaction);
-                }
-                else
-                {
-                    entity.UpdatedAt = DateTimeOffset.Now;
                 }
 
                 await _db.SaveChangesAsync();
