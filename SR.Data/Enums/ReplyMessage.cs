@@ -43,8 +43,8 @@ namespace SR.Data.Enums
             {
                 return language switch
                 {
-                    Language.English => "`An output error has occurred. Please show this to kkxo#0001.`",
-                    Language.Russian => "`Возникла ошибка вывода ответа. Пожалуйста, покажите это kkxo#0001.`",
+                    Language.English => "`An output error has occurred. Please show this to <@550493599629049858>.`",
+                    Language.Russian => "`Возникла ошибка вывода ответа. Пожалуйста, покажите это <@550493599629049858>.`",
                     _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
                 };
             }
