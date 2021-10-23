@@ -4,201 +4,209 @@ namespace SR.Data.Enums
 {
     public enum ReplyMessage : byte
     {
-        SettingsPrefixFieldName,
-        SettingsEmbedColorFieldName,
         SettingsLanguageFieldName,
-        SettingsPrefixFieldDesc,
-        SettingsEmbedColorFieldDesc,
         SettingsLanguageFieldDesc,
-        SetPrefixSuccess,
-        SetColorSuccess,
+        SettingsEmbedColorFieldName,
+        SettingsEmbedColorFieldDesc,
+
         SetLanguageSuccess,
-        HelpHowToEditBotSettingsFieldName,
-        HelpHowToEditBotSettingsFieldDesc,
-        HelpHowToSendReactionsFieldName,
-        HelpHowToSendReactionsFieldDesc,
-        HelpHowToInviteBotFieldName,
-        HelpHowToInviteBotFieldDesc,
+        SetColorSuccess,
+        SyncCommandsSuccess,
+
         AboutDesc,
-        AboutInviteFieldName,
-        AboutContactFieldName,
+        AboutJoinSupportServerFieldName,
+        AboutJoinSupportServerFieldDesc,
+        AboutInviteBotFieldName,
+        AboutInviteBotFieldDesc,
+        AboutContactsFieldName,
+        AboutContactsFieldDesc,
+        AboutVoteFieldName,
+        AboutVoteFieldDesc,
         AboutSupportFieldName,
-        AboutInviteFieldDesc,
-        AboutContactFieldDesc,
         AboutSupportFieldDesc,
-        HelpFooter
+
+        HelpHowToSetupBotFieldName,
+        HelpHowToSetupBotFieldDesc,
+        HelpHowToUseReactionsFieldName,
+        HelpHowToUseReactionsFieldDesc
     }
 
     public static class ReplyMessageHelper
     {
-        public static string Parse(this ReplyMessage message, Language language) => message.Localize(language);
+        public static string Parse(this ReplyMessage message, LanguageType languageType) =>
+            message.Localize(languageType);
 
-        public static string Parse(this ReplyMessage message, Language language, params object[] replacements)
+        public static string Parse(this ReplyMessage message, LanguageType languageType, params object[] replacements)
         {
             try
             {
-                return string.Format(Parse(message, language), replacements);
+                return string.Format(Parse(message, languageType), replacements);
             }
             catch (FormatException)
             {
-                return language switch
+                return languageType switch
                 {
-                    Language.English => "`An output error has occurred. Please show this to <@550493599629049858>.`",
-                    Language.Russian => "`Возникла ошибка вывода ответа. Пожалуйста, покажите это <@550493599629049858>.`",
-                    _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+                    LanguageType.English =>
+                        "`An output error has occurred. Please show this to <@550493599629049858>.`",
+                    LanguageType.Russian =>
+                        "`Возникла ошибка вывода ответа. Пожалуйста, покажите это <@550493599629049858>.`",
+                    _ => throw new ArgumentOutOfRangeException(nameof(languageType), languageType, null)
                 };
             }
         }
 
-        public static string Localize(this ReplyMessage message, Language language) => message switch
+        private static string Localize(this ReplyMessage message, LanguageType language) => message switch
         {
-            ReplyMessage.SettingsPrefixFieldName => language switch
-            {
-                Language.English => "{0} Prefix",
-                Language.Russian => "{0} Префикс",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SettingsEmbedColorFieldName => language switch
-            {
-                Language.English => "{0} Embed color",
-                Language.Russian => "{0} Цвет эмбеда",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
             ReplyMessage.SettingsLanguageFieldName => language switch
             {
-                Language.English => "{0} Language",
-                Language.Russian => "{0} Язык",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SetPrefixSuccess => language switch
-            {
-                Language.English => "{0}, You have successfully updated the prefix to **{1}**.",
-                Language.Russian => "{0}, Вы успешно обновили префикс на **{1}**.",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SetColorSuccess => language switch
-            {
-                Language.English => "{0}, You have successfully updated embed color to **{1}**.",
-                Language.Russian => "{0}, Вы успешно обновили цвет эмбеда на **{1}**.",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SetLanguageSuccess => language switch
-            {
-                Language.English => "{0}, You have successfully updated language to **{1}**.",
-                Language.Russian => "{0}, Вы успешно обновили язык на **{1}**.",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SettingsPrefixFieldDesc => language switch
-            {
-                Language.English => "Current prefix: **{0}**\nUse `{0}settings prefix [new prefix]` to change",
-                Language.Russian =>
-                    "Текущий префикс: **{0}**\nНапишите `{0}настройки префикс [новый префикс]` чтобы изменить",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.SettingsEmbedColorFieldDesc => language switch
-            {
-                Language.English =>
-                    "Current color: **{0}**\nUse `{1}settings color [new hex-color]` to change\n\n> You can choose the color [by clicking here](https://www.google.com/search?q=color+picker)",
-                Language.Russian =>
-                    "Текущий цвет: **{0}**\nНапишите `{1}настройки цвет [новый hex-цвет]` чтобы изменить\n\n> Подобрать цвет можно [нажав сюда](https://www.google.com/search?q=color+picker)",
+                LanguageType.English => "{0} Language",
+                LanguageType.Russian => "{0} Язык",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
             ReplyMessage.SettingsLanguageFieldDesc => language switch
             {
-                Language.English =>
-                    "Current language: **{0}**\nUse `{1}settings language [new language number]` to change\nAvailable languages:\n{2}",
-                Language.Russian =>
-                    "Текущий язык: **{0}**\nНапишите `{1}настройки язык [номер нового языка]` чтобы изменить\n\n> Доступные языки:\n{2}",
+                LanguageType.English =>
+                    "Current language: **{0}**.\nUse `/settings update-language` to change.",
+                LanguageType.Russian =>
+                    "Текущий язык: **{0}**.\nНапишите `/settings update-language` чтобы изменить.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToEditBotSettingsFieldName => language switch
+            ReplyMessage.SettingsEmbedColorFieldName => language switch
             {
-                Language.English => "How to edit bot settings {0}",
-                Language.Russian => "Как изменить настройки бота {0}",
+                LanguageType.English => "{0} Embed color",
+                LanguageType.Russian => "{0} Цвет эмбеда",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToEditBotSettingsFieldDesc => language switch
+            ReplyMessage.SettingsEmbedColorFieldDesc => language switch
             {
-                Language.English =>
-                    "{0} Use `{1}{2}` command in any channel (to which the bot has access) on your server.",
-                Language.Russian =>
-                    "{0} Напишите `{1}{2}` в любом канале (к которому у бота есть доступ) на вашем сервере.",
+                LanguageType.English =>
+                    "Current color: **{0}**.\nUse `/settings update-color` to change.\n\n> You can choose the color [by clicking here](https://www.google.com/search?q=color+picker).",
+                LanguageType.Russian =>
+                    "Текущий цвет: **{0}**.\nНапишите `/settings update-color` чтобы изменить.\n\n> Подобрать цвет можно [нажав сюда](https://www.google.com/search?q=color+picker).",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToSendReactionsFieldName => language switch
+
+            ReplyMessage.SetLanguageSuccess => language switch
             {
-                Language.English => "How to send reactions {0}",
-                Language.Russian => "Как отправлять реакции {0}",
+                LanguageType.English => "{0}, you have successfully updated language to **{1}**.",
+                LanguageType.Russian => "{0}, вы успешно обновили язык на **{1}**.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToSendReactionsFieldDesc => language switch
+            ReplyMessage.SetColorSuccess => language switch
             {
-                Language.English =>
-                    "{0} Use `{1}{2}` command, available reactions are shown below:\n\n> {3}\n\n> You can also add any text or mention after the command to add it to the reaction.\n> Example command:\n> `{1}kiss @SomeUserMention with some text`",
-                Language.Russian =>
-                    "{0} Напишите `{1}{2}`, доступные реакции отображены ниже:\n\n> {3}\n\n> Вы так же можете добавить любой текст или упоминание после команды чтобы добавить его в реакцию.\n> Пример команды:\n> `{1}поцеловать @ЛюбоеУпоминание с любым текстом`",
+                LanguageType.English => "{0}, you have successfully updated embed color to **{1}**.",
+                LanguageType.Russian => "{0}, вы успешно обновили цвет эмбеда на **{1}**.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToInviteBotFieldName => language switch
+            ReplyMessage.SyncCommandsSuccess => language switch
             {
-                Language.English => "How to invite a bot to your server {0}",
-                Language.Russian => "Как пригласить бота на ваш сервер {0}",
+                LanguageType.English => "{0}, reaction commands created.",
+                LanguageType.Russian => "{0}, команды реакций созданы.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpHowToInviteBotFieldDesc => language switch
-            {
-                Language.English =>
-                    "{0} Click [here to open the invite link](https://discord.com/oauth2/authorize?client_id=851029845982707722&scope=bot&permissions=289792).",
-                Language.Russian =>
-                    "{0} Нажмите [сюда чтобы открыть ссылку с приглашением](https://discord.com/oauth2/authorize?client_id=851029845982707722&scope=bot&permissions=289792).",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
+
             ReplyMessage.AboutDesc => language switch
             {
-                Language.English => "{0} is a simple bot to help you send gif-reactions on your server.",
-                Language.Russian => "{0} это простой бот, помогающий использовать гиф-реакции на вашем сервере.",
+                LanguageType.English => "{0} is a simple bot to help you send gif-reactions on your server.",
+                LanguageType.Russian => "{0} это простой бот для отправки гиф-реакций на вашем сервере.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.AboutInviteFieldName => language switch
+            ReplyMessage.AboutJoinSupportServerFieldName => language switch
             {
-                Language.English => "Invite a bot to your server",
-                Language.Russian => "Пригласите бота на ваш сервер",
+                LanguageType.English => "Join support server",
+                LanguageType.Russian => "Присоединитесь на сервер поддержки",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.AboutContactFieldName => language switch
+            ReplyMessage.AboutJoinSupportServerFieldDesc => language switch
             {
-                Language.English => "Contacts",
-                Language.Russian => "Контакты",
+                LanguageType.English => "{0} [Click here to open the invite link]({1}).",
+                LanguageType.Russian => "{0} [Нажмите сюда чтобы открыть приглашение]({1}).",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.AboutInviteBotFieldName => language switch
+            {
+                LanguageType.English => "Add a bot to your server",
+                LanguageType.Russian => "Добавьте бота на свой сервер",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.AboutInviteBotFieldDesc => language switch
+            {
+                LanguageType.English => "{0} [Click here to open the invite link]({1}).",
+                LanguageType.Russian => "{0} [Нажмите сюда чтобы открыть приглашение]({1}).",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.AboutContactsFieldName => language switch
+            {
+                LanguageType.English => "Contacts",
+                LanguageType.Russian => "Контакты",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.AboutContactsFieldDesc => language switch
+            {
+                LanguageType.English =>
+                    "{0} Discord: <@550493599629049858>\n{1} Twitter: [@envyvox](https://twitter.com/envyvox)",
+                LanguageType.Russian =>
+                    "{0} Discord: <@550493599629049858>\n{1} Twitter: [@envyvox](https://twitter.com/envyvox)",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
             ReplyMessage.AboutSupportFieldName => language switch
             {
-                Language.English => "Support",
-                Language.Russian => "Поддержка",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.AboutInviteFieldDesc => language switch
-            {
-                Language.English => "{0} Click [here to open the invite link](https://discord.com/oauth2/authorize?client_id=851029845982707722&scope=bot&permissions=289792).",
-                Language.Russian => "{0} Нажмите [сюда чтобы открыть ссылку с приглашением](https://discord.com/oauth2/authorize?client_id=851029845982707722&scope=bot&permissions=289792).",
-                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
-            },
-            ReplyMessage.AboutContactFieldDesc => language switch
-            {
-                Language.English => "{0} Discord: <@550493599629049858>\n{1} Twitter: [@evkkxo](https://twitter.com/evkkxo)",
-                Language.Russian => "{0} Discord: <@550493599629049858>\n{1} Twitter: [@evkkxo](https://twitter.com/evkkxo)",
+                LanguageType.English => "Support",
+                LanguageType.Russian => "Поддержка",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
             ReplyMessage.AboutSupportFieldDesc => language switch
             {
-                Language.English => "You can support this small but useful bot by sending any amount you like. I will be grateful to you for every penny {0}\n{1} `5375 4141 0460 6651` EUGENE GARBUZOV",
-                Language.Russian => "Вы можете поддержать этого маленького, но полезного бота отправив любую сумму. Я буду благодарен вам за каждую копейку {0}\n{1} `5375 4141 0460 6651` EUGENE GARBUZOV",
+                LanguageType.English =>
+                    "You can support this small but useful bot by sending any amount you like. I will be grateful to you for every penny {0}\n{1} `5375 4141 0460 6651` EUGENE GARBUZOV",
+                LanguageType.Russian =>
+                    "Вы можете поддержать этого маленького, но полезного бота отправив любую сумму. Я буду благодарен за каждую копейку {0}\n{1} `5375 4141 0460 6651` EUGENE GARBUZOV",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-            ReplyMessage.HelpFooter => language switch
+            ReplyMessage.AboutVoteFieldName => language switch
             {
-                Language.English => "Because you used the command in DM - I cannot find out about your server settings. The message language and prefix are displayed by default and may differ from what is used on your server. Write this command on the server to get the exact information.",
-                Language.Russian => "Because you used the command in DM - I cannot find out about your server settings. The message language and prefix are displayed by default and may differ from what is used on your server. Write this command on the server to get the exact information.",
+                LanguageType.English => "Vote for bot on top.gg",
+                LanguageType.Russian => "Проголосуйте за бота на top.gg",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.AboutVoteFieldDesc => language switch
+            {
+                LanguageType.English => "{0} [Click here to vote]({1}).",
+                LanguageType.Russian => "{0} [Нажмите сюда чтобы проголосовать]({1}).",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.HelpHowToSetupBotFieldName => language switch
+            {
+                LanguageType.English => "How to set up a bot {0}",
+                LanguageType.Russian => "Как настроить бота {0}",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.HelpHowToSetupBotFieldDesc => language switch
+            {
+                LanguageType.English =>
+                    "{0} After adding the bot to your server, you need to follow a few steps to set it up:" +
+                    "\n\n1. Set the language you need. To do this, use `/settings update-language`." +
+                    "\n\n> The default language is **{1}**. If it suits you, you can skip this step." +
+                    "\n\n2. Use `/settings sync-commands` to add reaction commands with your chosen language." +
+                    "\n\n3. The bot is ready to use. Optionally, you can change the color of the embed messages by using `/settings update-color`.",
+                LanguageType.Russian =>
+                    "{0} После добавление бота на ваш сервер, необходимо выполнить несколько шагов для настройки:" +
+                    "\n\n1. Выставить необходимый вам язык. Для этого напишите `/settings update-language`." +
+                    "\n\n> Язык по-умолчанию - **{1}**. Если вам он подходит - вы можете пропустить этот шаг." +
+                    "\n\n2. Написать `/settings sync-commands` чтобы добавить команды реакций на выбранном вами языке." +
+                    "\n\n3. Бот готов к использованию. По желанию, вы можете изменить цвет эмбед сообщений написав `/settings update-color`.",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.HelpHowToUseReactionsFieldName => language switch
+            {
+                LanguageType.English => "How to use reactions {0}",
+                LanguageType.Russian => "Как использовать реакции {0}",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.HelpHowToUseReactionsFieldDesc => language switch
+            {
+                LanguageType.English => "{0} After the commands were added, all available reactions appeared in the list of commands:\n\n{1}",
+                LanguageType.Russian => "{0} После того как команды были добавлены, в списке команд появились все доступные реакции:\n\n{1}",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
             _ => throw new ArgumentOutOfRangeException(nameof(message), message, null)

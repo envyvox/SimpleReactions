@@ -7,9 +7,8 @@ namespace SR.Data.Entities
     public class DiscordGuild
     {
         public long Id { get; set; }
-        public string Prefix { get; set; }
-        public Language Language { get; set; }
-        public string Color { get; set; }
+        public LanguageType LanguageType { get; set; }
+        public string EmbedColor { get; set; }
     }
 
     public class DiscordGuildConfiguration : IEntityTypeConfiguration<DiscordGuild>
@@ -20,9 +19,8 @@ namespace SR.Data.Entities
             builder.HasIndex(x => x.Id).IsUnique();
 
             builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
-            builder.Property(x => x.Prefix).IsRequired();
-            builder.Property(x => x.Language).IsRequired();
-            builder.Property(x => x.Color).IsRequired();
+            builder.Property(x => x.LanguageType).IsRequired();
+            builder.Property(x => x.EmbedColor).IsRequired();
         }
     }
 }

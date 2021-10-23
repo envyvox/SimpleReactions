@@ -8,7 +8,7 @@ namespace SR.Data.Entities
     public class Reaction : IUniqueIdentifiedEntity
     {
         public Guid Id { get; set; }
-        public Enums.Reaction Type { get; set; }
+        public Enums.ReactionType Type { get; set; }
         public string Url { get; set; }
     }
 
