@@ -8,11 +8,9 @@ namespace SR.Data.Enums
         SettingsLanguageFieldDesc,
         SettingsEmbedColorFieldName,
         SettingsEmbedColorFieldDesc,
-
         SetLanguageSuccess,
         SetColorSuccess,
         SyncCommandsSuccess,
-
         AboutDesc,
         AboutJoinSupportServerFieldName,
         AboutJoinSupportServerFieldDesc,
@@ -24,11 +22,11 @@ namespace SR.Data.Enums
         AboutVoteFieldDesc,
         AboutSupportFieldName,
         AboutSupportFieldDesc,
-
         HelpHowToSetupBotFieldName,
         HelpHowToSetupBotFieldDesc,
         HelpHowToUseReactionsFieldName,
-        HelpHowToUseReactionsFieldDesc
+        HelpHowToUseReactionsFieldDesc,
+        CommandRequireAdministratorPermissions
     }
 
     public static class ReplyMessageHelper
@@ -85,7 +83,6 @@ namespace SR.Data.Enums
                     "Текущий цвет: **{0}**.\nНапишите `/settings update-color` чтобы изменить.\n\n> Подобрать цвет можно [нажав сюда](https://www.google.com/search?q=color+picker).",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-
             ReplyMessage.SetLanguageSuccess => language switch
             {
                 LanguageType.English => "{0}, you have successfully updated language to **{1}**.",
@@ -104,7 +101,6 @@ namespace SR.Data.Enums
                 LanguageType.Russian => "{0}, команды реакций созданы.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
-
             ReplyMessage.AboutDesc => language switch
             {
                 LanguageType.English => "{0} is a simple bot to help you send gif-reactions on your server.",
@@ -205,8 +201,16 @@ namespace SR.Data.Enums
             },
             ReplyMessage.HelpHowToUseReactionsFieldDesc => language switch
             {
-                LanguageType.English => "{0} After the commands were added, all available reactions appeared in the list of commands:\n\n{1}",
-                LanguageType.Russian => "{0} После того как команды были добавлены, в списке команд появились все доступные реакции:\n\n{1}",
+                LanguageType.English =>
+                    "{0} After the commands were added, all available reactions appeared in the list of commands:\n\n{1}",
+                LanguageType.Russian =>
+                    "{0} После того как команды были добавлены, в списке команд появились все доступные реакции:\n\n{1}",
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            },
+            ReplyMessage.CommandRequireAdministratorPermissions => language switch
+            {
+                LanguageType.English => "{0}, this command require **Administrator** permission.",
+                LanguageType.Russian => "{0}, эта команда требует наличие права **Администратор**.",
                 _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
             },
             _ => throw new ArgumentOutOfRangeException(nameof(message), message, null)
