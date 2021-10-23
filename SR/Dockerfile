@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 
 # Copy everything else and build
 COPY SR ./SR
-COPY SR.Framework ./SR.Framework
 COPY SR.Data ./SR.Data
 COPY SR.Services ./SR.Services
 

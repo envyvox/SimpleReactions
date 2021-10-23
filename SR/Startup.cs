@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
-using Autofac;
-using Discord.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SR.Data;
-using SR.Framework.Autofac;
-using SR.Services.DiscordServices.DiscordClientService;
-using SR.Services.DiscordServices.DiscordClientService.Impl;
-using SR.Services.DiscordServices.DiscordClientService.Options;
+using SR.Services.Discord.Client;
+using SR.Services.Discord.Client.Extensions;
+using SR.Services.Discord.Client.Impl;
 
 namespace SR
 {
@@ -40,10 +37,10 @@ namespace SR
                     x => { x.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name); });
             });
 
-            services.AddSingleton<CommandService>();
-            services.AddSingleton<IDiscordClientService, DiscordClientService>();
+            services.AddMediatR(typeof(IDiscordClientService).Assembly);
+            services.AddAutoMapper(typeof(IDiscordClientService).Assembly);
 
-            services.AddMemoryCache();
+            services.AddSingleton<IDiscordClientService, DiscordClientService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -56,22 +53,6 @@ namespace SR
             }
 
             app.StartDiscord();
-        }
-
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            var assembly = typeof(IDiscordClientService).Assembly;
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(x => x.IsDefined(typeof(InjectableServiceAttribute), false) &&
-                            x.GetCustomAttribute<InjectableServiceAttribute>().IsSingletone)
-                .As(x => x.GetInterfaces()[0])
-                .SingleInstance();
-
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(x => x.IsDefined(typeof(InjectableServiceAttribute), false) &&
-                            !x.GetCustomAttribute<InjectableServiceAttribute>().IsSingletone)
-                .As(x => x.GetInterfaces()[0])
-                .InstancePerLifetimeScope();
         }
 
         private static void MigrateDb(IServiceProvider app)
